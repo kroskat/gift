@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Для тебя подарок</title>
+<style>
+:root{--bg:#E3A8B0;--heart:#C6568E;--ink:#4a1d36;--card:#fff6f7;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;overflow-x:hidden}
+.screen{display:none;min-height:100%;box-sizing:border-box;padding:24px;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center}
+.screen.on{display:flex;animation:fade .5s ease}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+h1{font-size:clamp(24px,6vw,34px);margin:0;max-width:520px;line-height:1.2}
+.pic{width:min(260px,70vw);aspect-ratio:1;border-radius:28px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:90px;overflow:hidden;box-shadow:0 10px 30px rgba(74,29,54,.18)}
+.pic img{width:100%;height:100%;object-fit:cover}
+.btns{display:flex;gap:14px}
+button{font:inherit;font-weight:700;font-size:20px;padding:14px 34px;border:0;border-radius:999px;cursor:pointer;background:var(--heart);color:#fff;box-shadow:0 6px 16px rgba(198,86,142,.4);transition:transform .15s}
+button:active{transform:scale(.94)}
+button.alt{background:var(--card);color:var(--heart);box-shadow:none}
+.react{font-size:64px;height:76px}
+.react.pop{animation:pop .5s cubic-bezier(.3,1.8,.5,1)}
+@keyframes pop{from{transform:scale(0) rotate(-30deg)}to{transform:none}}
+#word{font-size:clamp(28px,8vw,46px);font-weight:900;letter-spacing:2px;filter:blur(10px);opacity:.25;transition:filter .1s,opacity .1s}
+.bar{width:min(300px,75vw);height:12px;border-radius:99px;background:rgba(255,255,255,.55);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--heart)}
+#pct{font-weight:700;font-size:18px}
+#loader{display:flex;flex-direction:column;align-items:center;gap:16px}
+#heartWrap{display:none;position:relative;width:min(560px,94vw)}
+#heartWrap.burst{display:block;animation:boom 1s cubic-bezier(.2,1.6,.4,1)}
+@keyframes boom{0%{transform:scale(0) rotate(-12deg);opacity:0}60%{transform:scale(1.25)}100%{transform:scale(1);opacity:1}}
+#heartWrap svg{width:100%;display:block;filter:drop-shadow(0 14px 24px rgba(74,29,54,.3))}
+.fly{position:fixed;bottom:-40px;color:var(--heart);animation:up linear forwards;pointer-events:none}
+@keyframes up{to{transform:translateY(-110vh) rotate(40deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<!-- Свои картинки: вставь ссылку на файл (например "img/1.png") между кавычками -->
+<script>const IMAGES={q1:"",q2:"",q3:"",q4:""};</script>
+
+<section class="screen on" id="s1">
+  <div class="pic" data-img="q1" data-fb="🎂"></div>
+  <h1>Правда, что тебе исполнилось 18?</h1>
+  <div class="react" id="r1"></div>
+  <div class="btns"><button onclick="go('s2')">Да</button><button class="alt" onclick="no('r1','🤔')">Нет</button></div>
+</section>
+
+<section class="screen" id="s2">
+  <div class="pic" data-img="q2" data-fb="😳"></div>
+  <h1>Правда?</h1>
+  <div class="btns"><button onclick="go('s3')">Да</button></div>
+</section>
+
+<section class="screen" id="s3">
+  <div class="pic" data-img="q3" data-fb="🎁"></div>
+  <h1>Ты готов(а) получить подарок?</h1>
+  <div class="react" id="r3"></div>
+  <div class="btns"><button onclick="reveal()">Да</button><button class="alt" onclick="no('r3','🤯')">Нет</button></div>
+</section>
+
+<section class="screen" id="s4">
+  <div class="pic" data-img="q4" data-fb="✨" id="pic4"></div>
+  <h1 id="t4">Твой подарок…</h1>
+  <div id="loader">
+    <div id="word">МОЯ ЛЮБОВЬ</div>
+    <div class="bar"><i id="fill"></i></div>
+    <div id="pct">0%</div>
+  </div>
+  <div id="heartWrap">
+    <svg viewBox="0 0 100 90">
+      <path d="M50 88C20 62 2 44 2 25C2 11 13 2 26 2C37 2 46 8 50 16C54 8 63 2 74 2C87 2 98 11 98 25C98 44 80 62 50 88Z" fill="#C6568E"/>
+      <text x="50" y="40" text-anchor="middle" fill="#fff" font-weight="900" font-size="12" font-family="-apple-system,Arial,sans-serif">МОЯ</text>
+      <text x="50" y="56" text-anchor="middle" fill="#fff" font-weight="900" font-size="12" font-family="-apple-system,Arial,sans-serif">ЛЮБОВЬ</text>
+    </svg>
+  </div>
+</section>
+
+<script>
+// картинки: твоя или запасной эмодзи
+document.querySelectorAll('.pic').forEach(function(p){
+  var src=IMAGES[p.dataset.img];
+  if(src){var i=document.createElement('img');i.src=src;i.alt='';p.appendChild(i);}
+  else p.textContent=p.dataset.fb;
+});
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('on')});
+  document.getElementById(id).classList.add('on');
+}
+
+function no(id,emoji){
+  var r=document.getElementById(id);
+  r.textContent=emoji;
+  r.classList.remove('pop');void r.offsetWidth;r.classList.add('pop');
+}
+
+function reveal(){
+  go('s4');
+  var word=document.getElementById('word'),fill=document.getElementById('fill'),pct=document.getElementById('pct');
+  var start=performance.now(),dur=3600;
+  function tick(now){
+    var t=Math.min((now-start)/dur,1);
+    var p=t<1?Math.pow(t,1.6):1;           // сначала медленно, потом быстрее
+    fill.style.width=(p*100)+'%';
+    pct.textContent=Math.round(p*100)+'%';
+    word.style.filter='blur('+(10*(1-p))+'px)';
+    word.style.opacity=.25+.75*p;
+    if(t<1)requestAnimationFrame(tick);else boom();
+  }
+  requestAnimationFrame(tick);
+}
+
+function boom(){
+  document.getElementById('loader').style.display='none';
+  document.getElementById('pic4').style.display='none';
+  document.getElementById('t4').textContent='Твой подарок:';
+  document.getElementById('heartWrap').classList.add('burst');
+  for(var i=0;i<28;i++){
+    (function(i){setTimeout(function(){
+      var h=document.createElement('div');
+      h.className='fly';h.textContent='♥';
+      h.style.left=Math.random()*100+'vw';
+      h.style.fontSize=(16+Math.random()*30)+'px';
+      h.style.animationDuration=(2.5+Math.random()*2.5)+'s';
+      document.body.appendChild(h);
+      setTimeout(function(){h.remove()},5200);
+    },i*80)})(i);
+  }
+}
+</script>
+</body>
+</html>
